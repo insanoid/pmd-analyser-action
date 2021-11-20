@@ -4,6 +4,14 @@ branding:
   icon: 'zoom-in'  
   color: 'yellow'
 inputs:
+  run-cpd:
+    description: 'If the action is to run Copy paste detector.'
+    required: false
+    default: 'false'
+  minimum-token:
+    description: 'Minimum token size for CPD.'
+    required: false
+    default: 150
   analyse-all-code:
     description: 'Used to determine whether you just want to analyse the files changed or the whole repository.'
     required: false

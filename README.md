@@ -35,6 +35,18 @@ jobs:
         with:
           # Incremental diffs require fetch depth to be at 0 to grab the target branch
           fetch-depth: '0'
+      - name: Run CPD
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        id: cpd-full-analysis
+        uses: synergy-au/pmd-analyser-action@v2.1
+        with:
+          run-cpd: 'true'
+          minimum-token: 150
+          pmd-version: 'latest'
+          file-path: './src'
+          rules-path: './pmd-ruleset.xml'
+          error-rules: 'AvoidDirectAccessTriggerMap,AvoidDmlStatementsInLoops,AvoidHardcodingId'
+          note-rules: 'ApexDoc'
       - name: Run Full PMD Analysis
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         id: pmd-full-analysis
@@ -62,13 +74,18 @@ jobs:
           sarif_file: pmd-output.sarif
       - name: No PMD Errors?
         run: |
-          if ${{ steps.pmd-full-analysis.outputs.error-found }} ${{ steps.pmd-partial-analysis.outputs.error-found }}
+          if ${{ steps.cpd-full-analysis.outputs.error-found }} ${{ steps.pmd-full-analysis.outputs.error-found }} ${{ steps.pmd-partial-analysis.outputs.error-found }}
           then
             exit 3
           fi
 ```
 
 ## Inputs
+
+### run-cpd
+Run copy paste detector. (needs `minimum-token`)
+-   required: false
+-   default: 'false'
 
 ### analyse-all-code
 
